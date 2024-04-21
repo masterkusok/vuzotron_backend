@@ -1,0 +1,5 @@
+services:
+  backend:
+    volumes:
+      - .:/app
+    entrypoint: [ "python", "-m", "uvicorn", "backend.asgi:application", "--host", "0.0.0.0", "--reload" ]

@@ -1,0 +1,64 @@
+services:
+  backend:
+    build:
+      context: ./
+    image: backend:latest
+    restart: "always"
+    ports:
+      - "8000:8000"
+    environment:
+      SQL_ENGINE: "django.db.backends.postgresql"
+      SQL_USER: "backend"
+      SQL_PASSWORD: "68768fvdfidiuyfi"
+      SQL_DB: "backend"
+      SQL_HOST: "db"
+      SQL_PORT: "5432"
+      DJANGO_SECRET_KEY: "django-insecure-mmgxq-%+=+g##z1j_a*ogdxwg8_++c1ae%c4n&qaa&_(jvg-@f"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  mirgator:
+    image: backend:latest
+    restart: "no"
+    entrypoint:
+      - "python3"
+      - "manage.py"
+      - "migrate"
+      - "--noinput"
+    environment:
+      SQL_ENGINE: "django.db.backends.postgresql"
+      SQL_USER: "backend"
+      SQL_PASSWORD: "68768fvdfidiuyfi"
+      SQL_DB: "backend"
+      SQL_HOST: "db"
+      SQL_PORT: "5432"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    restart: "always"
+    image: postgres:13-bullseye
+    #    volumes:
+    #      - "/fsdf:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_USER: "backend"
+      POSTGRES_PASSWORD: "68768fvdfidiuyfi"
+      POSTGRES_DB: "backend"
+    healthcheck:
+      test: pg_isready -U backend
+      interval: 2s
+      timeout: 3s
+      retries: 40
+  redis:
+    image: redis:7.2.4
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+      REDIS_IP: "127.0.0.1"
+      REDIS_PORT: 6379
+    healthcheck:
+      test: redis-cli ping
+      interval: 1s
+      timeout: 3s
+      retries: 50

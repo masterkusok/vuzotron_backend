@@ -183,7 +183,5 @@ fabric.properties
 
 # idea folder, uncomment if you don't need it
 .idea
-django_backend/temp/
-django_backend/registry.zip
-django_backend/db.sqlite3
-django_backend/dump.rdb
+temp/
+registry.zip
