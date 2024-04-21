@@ -1,3 +1,7 @@
-from django.shortcuts import render
+from django.http import JsonResponse, HttpRequest
+from universities.models import *
 
-# Create your views here.
+
+# здесь пишем view слой для университетов
+def get_university(request: HttpRequest) -> JsonResponse:
+    return JsonResponse('{"status":"ok"}')

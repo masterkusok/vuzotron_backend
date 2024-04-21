@@ -2,19 +2,21 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-mmgxq-%+=+g##z1j_a*ogdxwg8_++c1ae%c4n&qaa&_(jvg-@f')
 DEBUG = True
+STATIC_URL = 'static/'
 
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
+    'universities',
+    'specialities',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'universities.models'
 ]
 
 MIDDLEWARE = [
