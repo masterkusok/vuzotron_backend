@@ -66,5 +66,5 @@ def parse_file(path: str) -> (bool, list[University]):
 
             if university.specialities.count() != 0:
                 university_list.append(university)
-
+    # comment
     return True, university_list
