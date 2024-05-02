@@ -10,7 +10,7 @@ def get_speciality_handler(request: HttpRequest) -> JsonResponse:
     if not target_id:
         return JsonResponse('{"status":"ok"}', status=HTTPStatus.BAD_REQUEST)
     else:
-        get_speciality(target_id)
+        get_one(target_id)
         return JsonResponse('{"status":"ok"}', status=HTTPStatus.OK)
 
 
@@ -20,7 +20,7 @@ def add_speciality_handler(request: HttpRequest) -> JsonResponse:
     if not json_data["name"] or not json_data["code"] or not json_data["level"] or not json_data["form"]:
         return JsonResponse('{"status":"ok"}', status=HTTPStatus.BAD_REQUEST)
     else:
-        add_speciality(json_data["name"], json_data["code"], json_data["level"], json_data["form"])
+        add(json_data["name"], json_data["code"], json_data["level"], json_data["form"])
         return JsonResponse('{"status":"ok"}', status=HTTPStatus.OK)
 
 
@@ -34,5 +34,5 @@ def update_speciality_handler(request: HttpRequest) -> JsonResponse:
     json_string = request.body.decode()
     json_data = json.loads(json_string)
     if json_data["name"] or json_data["code"] or json_data["level"] or json_data["form"]:
-        update_speciality(json_data["name"], json_data["code"], json_data["level"], json_data["form"])
+        update(json_data["name"], json_data["code"], json_data["level"], json_data["form"])
     return JsonResponse('{"status":"ok"}', status=HTTPStatus.OK)
