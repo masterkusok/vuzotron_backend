@@ -13,7 +13,7 @@ def get_one(target_id) -> Speciality:
     Speciality
         Speciality object, if speciality with such was found in database, otherwise None
     """
-    if Speciality.objects.filter(id=target_id).exist():
+    if Speciality.objects.filter(id=target_id).exists():
         speciality = Speciality.objects.get(id=target_id)
         return speciality
     return None
@@ -83,13 +83,13 @@ def delete(target_id: int) -> bool:
     bool
         Returns true if speciality was deleted, false otherwise
     """
-    if Speciality.objects.filter(id=target_id).exist():
+    if Speciality.objects.filter(id=target_id).exists():
         Speciality.objects.get(id=target_id).delete()
         return True
     return False
 
 
-def update(target_id: int, name: str, code: str, level: str, form: str, auto_update: bool = True) -> bool:
+def update(target_id: int, name: str, code: str, level: str, form: str, auto_update: bool = False) -> bool:
     """
     This method is used to update speciality fields in database.
     Parameters
@@ -105,14 +105,13 @@ def update(target_id: int, name: str, code: str, level: str, form: str, auto_upd
     form : str
         New form of education
     auto_update : bool
-        New value for auto_update. By default, it updates to True.
+        New value for auto_update. By default, it updates to False.
     Returns
     ----------
     bool
         Returns true if speciality was updated, false otherwise
     """
     if Speciality.objects.filter(id=target_id).exists():
-        speciality = Speciality.objects.update(name=name, code=code, level=level, form=form, auto_update=auto_update)
-        speciality.save()
+        Speciality.objects.update(name=name, code=code, level=level, form=form, auto_update=auto_update)
         return True
     return False
