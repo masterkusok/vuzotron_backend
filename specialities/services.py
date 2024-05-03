@@ -112,6 +112,12 @@ def update(target_id: int, name: str, code: str, level: str, form: str, auto_upd
         Returns true if speciality was updated, false otherwise
     """
     if Speciality.objects.filter(id=target_id).exists():
-        Speciality.objects.update(name=name, code=code, level=level, form=form, auto_update=auto_update)
+        speciality = Speciality.objects.get(id=target_id)
+        speciality.name = name
+        speciality.code = code
+        speciality.level = level
+        speciality.form = form
+        speciality.auto_update = auto_update
+        speciality.save()
         return True
     return False
