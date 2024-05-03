@@ -21,26 +21,48 @@ def pull_registry_data(url: str) -> bool:
         Returns True, if data in DB was updated.
     """
 
-
     # парсим файл
-    ok, university_list = parse_file('temp/' + os.listdir('temp/')[0])
+    # response = requests.get(url, stream=True)
+    # cacher = backend.settings.REDIS_CACHER
+    # if response.status_code != HTTPStatus.OK:
+    #     print("Invalid url")
+    #     return False
+    #
+    # with open('registry.zip', mode='wb') as file:
+    #     for chunk in response.iter_content(chunk_size=10 * 1024):
+    #         print(f'downloading registry zip... downloaded {len(chunk)} bytes')
+    #         file.write(chunk)
+    #
+    # with open("registry.zip", mode="rb") as file:
+    #     registry_hash = hashlib.md5()
+    #     while chunk := file.read():
+    #         registry_hash.update(chunk)
+    #
+    # actual_hash = cacher.get('hash')
+    # if actual_hash == registry_hash.digest():
+    #     print('registry has not changed')
+    #     return False
+    #
+    # cacher.set('hash', registry_hash.digest())
+    # with zipfile.ZipFile('registry.zip', 'r') as zip_origin:
+    #     zip_origin.extractall('temp/')
+    #
+
+    ok, parsed_universities = parse_file('temp/' + os.listdir('temp/')[0])
 
     if not ok:
         print('cant handle parsing ')
         return False
 
-    # обновим данные в БД
-    for university in university_list:
-        if University.objects.filter(system_guid=university.system_guid).exists():
-            # Обновление данных по университету, которых уже представлен в базе
-            db_university = University.objects.get(system_guid=university)
-            if not db_university:
-                University.objects.create(system_guid=university.system_guid, short_name=university.short_name,
-                                          region=university.region, city=university.city,
-                                          full_name=university.full_name)
-            if db_university.auto_update:  # Если университет обновлялся руками, его не трогаем
-                db_university = university
-                db_university.save()
+    for university, specialities in parsed_universities:
+        if not (University.objects.filter(system_guid=university.system_guid).exists()):
+            university.save()
+            university.specialities.add(specialities)
+            continue
+
+        db_university = University.objects.update()
+
+
 
     os.remove('registry.zip')
     shutil.rmtree('temp')

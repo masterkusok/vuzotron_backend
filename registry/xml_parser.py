@@ -8,8 +8,8 @@ START_EVENT = 'start'
 END_EVENT = 'end'
 
 
-def parse_file(path: str) -> (bool, list[University]):
-    university_list = []
+def parse_file(path: str) -> bool:
+    university_list = {}
     if not os.path.exists(path):
         # файл не найден
         return False, university_list
@@ -34,14 +34,8 @@ def parse_file(path: str) -> (bool, list[University]):
                     sys_guid.text) == 0:
                 continue
 
-            if University.objects.filter(system_guid=sys_guid).exists():
-                university = University.objects.get(system_guid=sys_guid)
-                if not university.auto_update:
-                    continue
-            else:
-                university = University.objects.create(short_name=short_name.text, region=region.text,
-                                                       city='какой то город', full_name=full_name.text,
-                                                       system_guid=sys_guid.text)
+            university = University()
+            specs = []
 
             supplements = elem.find('Supplements')
             if supplements is None:
@@ -60,11 +54,10 @@ def parse_file(path: str) -> (bool, list[University]):
                     if level_name.text is None or 'высш' not in level_name.text:
                         continue
 
-                    speciality = Speciality.objects.create(name=name.text, code=code.text, level=level_name.text,
-                                                           form='no_data')
-                    university.specialities.add(speciality)
+                    speciality = Speciality(name=name.text, code=code.text, level=level_name.text, form='no_data')
+                    specs.append(speciality)
 
-            if university.specialities.count() != 0:
-                university_list.append(university)
+            if len(specs) != 0:
+                university_list[university] = specs
     # comment
     return True, university_list
