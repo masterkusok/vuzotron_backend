@@ -1,7 +1,10 @@
-from django.http import JsonResponse, HttpRequest
-from universities.models import *
+from .serializers import UniversitySerializer
+from .services import *
+from api_base.api import *
 
 
-# здесь пишем view слой для университетов
-def get_university(request: HttpRequest) -> JsonResponse:
-    return JsonResponse('{"status":"ok"}')
+class UniversityView(BaseView):
+    def __init__(self):
+        self.provider = UniversityServices()
+        self.serializer_type = UniversitySerializer
+        super(UniversityView, self).__init__()

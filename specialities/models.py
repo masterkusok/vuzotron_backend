@@ -1,7 +1,7 @@
-from django.db import models
+from api_base.mixins import *
 
 
-class Speciality(models.Model):
+class Speciality(RegistryObjectMixIn):
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=63)
     level = models.CharField(max_length=63)
