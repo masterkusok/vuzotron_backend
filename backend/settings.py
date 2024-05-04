@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+from registry import cache
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-mmgxq-%+=+g##z1j_a*ogdxwg8_++c1ae%c4n&qaa&_(jvg-@f')
 DEBUG = True
@@ -32,8 +34,8 @@ ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
     {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -56,6 +58,17 @@ DATABASES = {
         'PASSWORD': os.environ.get('SQL_PASSWORD', 'password'),
         'HOST': os.environ.get('SQL_HOST', 'localhost'),
         'PORT': os.environ.get('SQL_PORT', '5432'),
+    }
+}
+
+REDIS_HOST = os.environ.get('REDIS_IP', '127.0.0.1')
+REDIS_PORT = os.environ.get('REDIS_PORT', 6379)
+REDIS_CACHER = cache.RedisCacher(REDIS_HOST, REDIS_PORT)
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': f'{REDIS_HOST}:{REDIS_PORT}',
     }
 }
 

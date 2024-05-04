@@ -12,3 +12,19 @@ class UniversityServices(services.ServiceProvider):
             'city': str,
             'region': str,
         }
+
+    def get_by(self, **kwargs: dict) -> University or None:
+        """
+        This method is used to get a university from database by any of its fields.
+        Parameters
+        ----------
+        kwargs : dict
+            fields and their values to match
+        Returns
+        ----------
+        University or None
+            Returns University object if there is matching university, else None
+        """
+        if University.objects.filter(**kwargs).exists():
+            return University.objects.get(**kwargs)
+        return None

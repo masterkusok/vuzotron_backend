@@ -20,9 +20,9 @@ class ServiceProvider(ABC):
     def get_list(self) -> list[models.Model]:
         return self.model.objects.all()
 
-    def add_one(self, **kwargs) -> int:
+    def add_one(self, **kwargs) -> models.Model:
         model = self.model.objects.create(**kwargs)
-        return model.id
+        return model
 
     def add_many(self, data: list[dict[str:str]]) -> list[int]:
         result = self.model.objects.bulk_create(data)
@@ -34,9 +34,9 @@ class ServiceProvider(ABC):
             return True
         return False
 
-    def update(self, target_id: int, data: dict[str:str]) -> bool:
+    def update(self, target_id: int, **kwargs) -> bool:
         model = self.get_one(target_id)
         if not model:
             return False
-        model.update(**data)
+        model.update(**kwargs)
         return True
