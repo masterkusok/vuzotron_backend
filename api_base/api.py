@@ -44,8 +44,8 @@ class BaseView(View):
                     {'message': f'Field {required_field} is should be type: {self.provider.fields[required_field]}'},
                     status=HTTPStatus.BAD_REQUEST)
 
-        id = self.provider.add_one(**json_data)
-        return JsonResponse({'id': id}, status=HTTPStatus.OK)
+        result = self.provider.add_one(**json_data)
+        return JsonResponse({'id': result.id}, status=HTTPStatus.OK)
 
     def put(self, request: HttpRequest) -> JsonResponse:
         id = request.GET.get('id')
@@ -66,7 +66,7 @@ class BaseView(View):
                     {'message': f'Field {required_field} is should be type: {self.provider.fields[required_field]}'},
                     status=HTTPStatus.BAD_REQUEST)
 
-        result = self.provider.update(id, json_data)
+        result = self.provider.update(id, **json_data)
         if not result:
             return JsonResponse({'message': ''}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
         return JsonResponse({'id': id}, status=HTTPStatus.OK)

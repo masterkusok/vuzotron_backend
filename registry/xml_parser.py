@@ -8,8 +8,8 @@ START_EVENT = 'start'
 END_EVENT = 'end'
 
 
-def parse_file(path: str) -> bool:
-    university_list = {}
+def parse_file(path: str) -> (bool, list[(University, list[Speciality])]):
+    university_list = []
     if not os.path.exists(path):
         # файл не найден
         return False, university_list
@@ -17,15 +17,13 @@ def parse_file(path: str) -> bool:
     for event, elem in iterparse(path, events=(START_EVENT, END_EVENT)):
         # Читаем новый сертификат
         if elem.tag == 'Certificate' and event == START_EVENT:
-            status_elem = elem.find('StatusName')
-            if status_elem is None or status_elem.text is None or 'действ' not in status_elem.text.lower():
-                # Недействующая лицензия - пропускаем
+            organization = elem.find('ActualEducationOrganization')
+            if not organization:
                 continue
-
-            region = elem.find('RegionName')
-            full_name = elem.find('EduOrgFullName')
-            short_name = elem.find('EduOrgShortName')
-            sys_guid = elem.find('Id')
+            region = organization.find('RegionName')
+            full_name = organization.find('FullName')
+            short_name = organization.find('ShortName')
+            sys_guid = organization.find('Id')
             if region is None or full_name is None or short_name is None or sys_guid is None:
                 continue
             if region.text is None or full_name.text is None or short_name.text is None or sys_guid.text is None:
@@ -34,7 +32,8 @@ def parse_file(path: str) -> bool:
                     sys_guid.text) == 0:
                 continue
 
-            university = University()
+            university = University(region=region.text, full_name=full_name.text, short_name=short_name.text,
+                                    sys_guid=sys_guid.text, city='no_data')
             specs = []
 
             supplements = elem.find('Supplements')
@@ -51,13 +50,18 @@ def parse_file(path: str) -> bool:
                     if level_name is None or name is None or code is None:
                         continue
 
-                    if level_name.text is None or 'высш' not in level_name.text:
+                    if (level_name.text is None or name.text is None or code.text is None) or (
+                            level_name == '' or name.text == '' or code.text == '' or name.text == ''):
+                        continue
+
+                    if 'высш' not in level_name.text.lower():
                         continue
 
                     speciality = Speciality(name=name.text, code=code.text, level=level_name.text, form='no_data')
                     specs.append(speciality)
 
             if len(specs) != 0:
-                university_list[university] = specs
+                university_list.append((university, specs))
+                print(f'University found. Current number of universities is {len(university_list)}')
     # comment
     return True, university_list
