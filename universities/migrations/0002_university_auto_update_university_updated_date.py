@@ -6,17 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('specialities', '0001_initial'),
+        ('universities', '0001_initial'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='speciality',
+            model_name='university',
             name='auto_update',
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='speciality',
+            model_name='university',
             name='updated_date',
             field=models.DateTimeField(auto_now=True),
         ),
