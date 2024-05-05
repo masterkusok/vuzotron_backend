@@ -35,8 +35,8 @@ class ServiceProvider(ABC):
         return False
 
     def update(self, target_id: int, **kwargs) -> bool:
-        model = self.get_one(target_id)
-        if not model:
+        target_model = self.model.objects.filter(id=target_id)
+        if not target_model:
             return False
-        model.update(**kwargs)
+        target_model.update(**kwargs)
         return True
