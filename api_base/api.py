@@ -17,6 +17,8 @@ class BaseView(View):
             id = request.GET.get('id')
             if not id:
                 return JsonResponse({'message': 'Id is required'}, status=HTTPStatus.BAD_REQUEST)
+            if not id.isdigit():
+                return JsonResponse({'message': 'Id must be a number'}, status=HTTPStatus.BAD_REQUEST)
             target = self.provider.get_one(id)
             if not target:
                 return JsonResponse({'message': 'Not found'}, status=HTTPStatus.NOT_FOUND)
