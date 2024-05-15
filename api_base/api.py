@@ -41,6 +41,9 @@ class BaseView(View):
         for required_field in self.provider.fields:
             if required_field not in json_data:
                 return JsonResponse({'message': f'Field {required_field} is required'}, status=HTTPStatus.BAD_REQUEST)
+            if not json_data[required_field]:
+                return JsonResponse({'message': f'Field {required_field} cannot be empty'},
+                                    status=HTTPStatus.BAD_REQUEST)
             if not isinstance(json_data[required_field], self.provider.fields[required_field]):
                 return JsonResponse(
                     {'message': f'Field {required_field} is should be type: {self.provider.fields[required_field]}'},
