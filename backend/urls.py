@@ -6,5 +6,4 @@ urlpatterns = [
     path('api/v1/universities', include('universities.urls')),
     path('api/v1/specialities', include('specialities.urls')),
     path('api/v1/registry/', include('registry.urls')),
-    path('api/v1/users/', include('users.urls')),
 ]

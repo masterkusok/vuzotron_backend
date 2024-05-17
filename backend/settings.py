@@ -7,14 +7,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-mmgxq-%+=+g##z1j_a*ogdxwg8_++c1ae%c4n&qaa&_(jvg-@f')
 DEBUG = True
 STATIC_URL = 'static/'
-AUTH_USER_MODEL = "users.User"
 
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'universities',
     'specialities',
-    'users',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

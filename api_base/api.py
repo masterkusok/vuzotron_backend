@@ -12,12 +12,6 @@ class BaseView(View):
     provider: ServiceProvider
     serializer_type: Type[Serializer]
 
-    def _require_admin(self, request: HttpRequest) -> JsonResponse or None:
-        if not request.user.has_perm('admin'):
-            return JsonResponse({'message': 'You are not allowed to make this request.'},
-                                status=HTTPStatus.FORBIDDEN)
-        return None
-
     def get(self, request: HttpRequest) -> JsonResponse:
         if len(request.GET) > 0:
             id = request.GET.get('id')
@@ -34,10 +28,6 @@ class BaseView(View):
         return JsonResponse(serializer.data, status=HTTPStatus.OK, safe=False)
 
     def post(self, request: HttpRequest) -> JsonResponse:
-        perm_check = self._require_admin(request)
-        if perm_check is not None:
-            return perm_check
-
         json_string = request.body.decode()
         json_data = json.loads(json_string)
 
@@ -58,10 +48,6 @@ class BaseView(View):
         return JsonResponse({'id': result.id}, status=HTTPStatus.OK)
 
     def put(self, request: HttpRequest) -> JsonResponse:
-        perm_check = self._require_admin(request)
-        if perm_check is not None:
-            return perm_check
-
         id = request.GET.get('id')
         if not id:
             return JsonResponse({'message': 'Id is required'}, status=HTTPStatus.BAD_REQUEST)
@@ -86,10 +72,6 @@ class BaseView(View):
         return JsonResponse({'id': id}, status=HTTPStatus.OK)
 
     def delete(self, request: HttpRequest) -> JsonResponse:
-        perm_check = self._require_admin(request)
-        if perm_check is not None:
-            return perm_check
-
         target_id = request.GET.get('id')
         if not target_id:
             return JsonResponse({'message': 'id is required'}, status=HTTPStatus.BAD_REQUEST)
