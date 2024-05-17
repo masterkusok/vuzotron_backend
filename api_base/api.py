@@ -1,14 +1,15 @@
 import json
 from typing import Type
-
 from django.http import HttpRequest, JsonResponse
-from django.views import View
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Serializer
+from rest_framework.views import APIView
 from api_base.services import ServiceProvider
 from http import HTTPStatus
 
 
-class BaseView(View):
+class BaseView(APIView):
     provider: ServiceProvider
     serializer_type: Type[Serializer]
 
@@ -28,6 +29,7 @@ class BaseView(View):
         return JsonResponse(serializer.data, status=HTTPStatus.OK, safe=False)
 
     def post(self, request: HttpRequest) -> JsonResponse:
+        permission_classes(IsAdminUser)
         json_string = request.body.decode()
         json_data = json.loads(json_string)
 
@@ -48,6 +50,7 @@ class BaseView(View):
         return JsonResponse({'id': result.id}, status=HTTPStatus.OK)
 
     def put(self, request: HttpRequest) -> JsonResponse:
+        permission_classes(IsAdminUser)
         id = request.GET.get('id')
         if not id:
             return JsonResponse({'message': 'Id is required'}, status=HTTPStatus.BAD_REQUEST)
@@ -72,6 +75,7 @@ class BaseView(View):
         return JsonResponse({'id': id}, status=HTTPStatus.OK)
 
     def delete(self, request: HttpRequest) -> JsonResponse:
+        permission_classes(IsAdminUser)
         target_id = request.GET.get('id')
         if not target_id:
             return JsonResponse({'message': 'id is required'}, status=HTTPStatus.BAD_REQUEST)
