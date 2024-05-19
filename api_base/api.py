@@ -16,7 +16,7 @@ class BaseView(View):
         if len(request.GET) > 0:
             id = request.GET.get('id')
             if not id:
-                return JsonResponse({'message': 'Id is required'}, status=HTTPStatus.BAD_REQUEST)
+                return self._get_with_filters(request)
             if not id.isdigit():
                 return JsonResponse({'message': 'Id must be a number'}, status=HTTPStatus.BAD_REQUEST)
             target = self.provider.get_one(id)
@@ -26,6 +26,16 @@ class BaseView(View):
             return JsonResponse(serializer.data, status=HTTPStatus.OK)
 
         target_list = self.provider.get_list()
+        serializer = self.serializer_type(target_list, many=True)
+        return JsonResponse(serializer.data, status=HTTPStatus.OK, safe=False)
+
+    def _get_with_filters(self, request: HttpRequest) -> JsonResponse:
+        filters_dict = request.GET.dict()
+        print(filters_dict)
+        for key in filters_dict:
+            if key not in self.provider.fields and key != 'query':
+                return JsonResponse({'message': f'unknown field: {key}'}, status=HTTPStatus.BAD_REQUEST)
+        target_list = self.provider.get_list(**filters_dict)
         serializer = self.serializer_type(target_list, many=True)
         return JsonResponse(serializer.data, status=HTTPStatus.OK, safe=False)
 
