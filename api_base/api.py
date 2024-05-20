@@ -1,10 +1,14 @@
 import json
+import math
 from typing import Type
+
+from django.db.models import QuerySet
+from rest_framework.views import APIView
+from rest_framework.response import Serializer
+from rest_framework.pagination import PageNumberPagination
 from django.http import HttpRequest, JsonResponse
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAdminUser
-from rest_framework.response import Serializer
-from rest_framework.views import APIView
 from api_base.services import ServiceProvider
 from http import HTTPStatus
 
@@ -14,21 +18,53 @@ class BaseView(APIView):
     serializer_type: Type[Serializer]
 
     def get(self, request: HttpRequest) -> JsonResponse:
-        if len(request.GET) > 0:
-            id = request.GET.get('id')
-            if not id:
-                return JsonResponse({'message': 'Id is required'}, status=HTTPStatus.BAD_REQUEST)
-            if not id.isdigit():
-                return JsonResponse({'message': 'Id must be a number'}, status=HTTPStatus.BAD_REQUEST)
-            target = self.provider.get_one(id)
-            if not target:
-                return JsonResponse({'message': 'Not found'}, status=HTTPStatus.NOT_FOUND)
-            serializer = self.serializer_type(target)
-            return JsonResponse(serializer.data, status=HTTPStatus.OK)
+        # get one entity by its id
+        if len(request.GET) == 1 and 'id' in request.GET:
+            return self._get_by_id(request)
 
-        target_list = self.provider.get_list()
-        serializer = self.serializer_type(target_list, many=True)
-        return JsonResponse(serializer.data, status=HTTPStatus.OK, safe=False)
+        if len(request.GET) > 0:
+            query_result = self._get_with_filters(request)
+        else:
+            query_result = self._get_all()
+
+        return self._get_paginated_response(query_result, request)
+
+    def _get_by_id(self, request: HttpRequest) -> JsonResponse:
+        id = request.GET.get(key='id')
+        if not id.isdigit():
+            return JsonResponse({'message': 'Id must be a number'}, status=HTTPStatus.BAD_REQUEST)
+        target = self.provider.get_one(id)
+        if not target:
+            return JsonResponse({'message': 'Not found'}, status=HTTPStatus.NOT_FOUND)
+        serializer = self.serializer_type(target)
+        return JsonResponse(serializer.data, status=HTTPStatus.OK)
+
+    def _get_with_filters(self, request: HttpRequest) -> QuerySet or None:
+        filters_dict = request.GET.dict()
+        if 'page' in filters_dict:
+            del filters_dict['page']
+        print(filters_dict)
+        for key in filters_dict:
+            if key not in self.provider.fields and key != 'query':
+                return None
+
+        return self.provider.get_list(**filters_dict)
+
+    def _get_all(self) -> QuerySet:
+        return self.provider.get_list()
+
+    def _get_paginated_response(self, query: QuerySet, request: HttpRequest) -> JsonResponse:
+        paginator = PageNumberPagination()
+        result = paginator.paginate_queryset(query, request)
+        serializer = self.serializer_type(result, many=True)
+        return JsonResponse(data={
+            'results': serializer.data,
+            'page_size': paginator.page_size,
+            'total_pages': self._get_total_pages(len(query), paginator.page_size)
+        })
+
+    def _get_total_pages(self, total_len, page_size: int) -> int:
+        return int(math.ceil(total_len / page_size))
 
     def post(self, request: HttpRequest) -> JsonResponse:
         permission_classes(IsAdminUser)
@@ -55,8 +91,12 @@ class BaseView(APIView):
         return JsonResponse({'id': result.id}, status=HTTPStatus.OK)
 
     def put(self, request: HttpRequest) -> JsonResponse:
+<<<<<<< api_base/api.py
+        id = request.GET.get(key='id')
+=======
         permission_classes(IsAdminUser)
         id = request.GET.get('id')
+>>>>>>> api_base/api.py
         if not id:
             return JsonResponse({'message': 'Id is required'}, status=HTTPStatus.BAD_REQUEST)
         speciality = self.provider.get_one(id)
@@ -80,8 +120,12 @@ class BaseView(APIView):
         return JsonResponse({'id': id}, status=HTTPStatus.OK)
 
     def delete(self, request: HttpRequest) -> JsonResponse:
+<<<<<<< api_base/api.py
+        target_id = request.GET.get(key='id')
+=======
         permission_classes(IsAdminUser)
         target_id = request.GET.get('id')
+>>>>>>> api_base/api.py
         if not target_id:
             return JsonResponse({'message': 'id is required'}, status=HTTPStatus.BAD_REQUEST)
         result = self.provider.delete(target_id)
