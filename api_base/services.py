@@ -2,6 +2,7 @@ from abc import ABC
 from typing import Type
 from django.contrib.postgres.search import *
 from django.db import models
+from django.db.models import QuerySet
 
 
 class ServiceProvider(ABC):
@@ -17,7 +18,7 @@ class ServiceProvider(ABC):
             return self.model.objects.get(id=target_id)
         return None
 
-    def get_list(self, **filters) -> list[models.Model]:
+    def get_list(self, **filters) -> QuerySet:
         if len(filters) == 0:
             return self.model.objects.all()
 
@@ -26,6 +27,8 @@ class ServiceProvider(ABC):
         if 'query' in filters:
             db_filters['search__icontains'] = db_filters['query']
             del db_filters['query']
+        if 'page' in filters:
+            del db_filters['page']
         return self.model.objects.annotate(search=vector).filter(**db_filters).all()
 
     def add_one(self, **kwargs) -> models.Model:
