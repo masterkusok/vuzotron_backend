@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-
 from registry import cache
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,6 +12,10 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'universities',
     'specialities',
+    'djoser',
+    'users',
+    'rest_framework',
+    'rest_framework.authtoken',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -25,6 +28,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware'
@@ -90,6 +94,14 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 2,
+    'DEFAULT_PERMISSION_CLASSES': [
+      'rest_framework.permissions.IsAuthenticated',
+      'rest_framework.permissions.IsAdminUser'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ]
 }
 
 LANGUAGE_CODE = 'en-us'
