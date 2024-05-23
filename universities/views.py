@@ -1,4 +1,4 @@
-from .serializers import UniversitySerializer
+from .serializers import SingleUniversitySerializer, UniversityListSerializer
 from .services import *
 from api_base.api import *
 
@@ -6,8 +6,15 @@ from api_base.api import *
 class UniversityView(BaseView):
     def __init__(self):
         self.provider = UniversityServices()
-        self.serializer_type = UniversitySerializer
+        self.serializer_type = UniversityListSerializer
         super(UniversityView, self).__init__()
+
+    def get(self, request: HttpRequest) -> JsonResponse:
+        if 'id' in request.GET:
+            self.serializer_type = SingleUniversitySerializer
+        response = super(UniversityView, self).get(request)
+        self.serializer_type = UniversityListSerializer
+        return response
 
     def post(self, request: HttpRequest) -> JsonResponse:
         response = super().post(request)

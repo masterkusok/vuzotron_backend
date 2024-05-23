@@ -17,6 +17,7 @@ class BaseView(APIView):
     permission_classes = [IsAdminOrReadonly]
 
     def get(self, request: HttpRequest) -> JsonResponse:
+
         # get one entity by its id
         if len(request.GET) == 1 and 'id' in request.GET:
             return self._get_by_id(request)
