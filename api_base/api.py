@@ -8,7 +8,7 @@ from rest_framework.response import Serializer
 from rest_framework.pagination import PageNumberPagination
 from django.http import HttpRequest, JsonResponse
 from rest_framework.decorators import permission_classes
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, AllowAny
 from api_base.services import ServiceProvider
 from http import HTTPStatus
 
@@ -18,6 +18,7 @@ class BaseView(APIView):
     serializer_type: Type[Serializer]
 
     def get(self, request: HttpRequest) -> JsonResponse:
+
         # get one entity by its id
         if len(request.GET) == 1 and 'id' in request.GET:
             return self._get_by_id(request)
