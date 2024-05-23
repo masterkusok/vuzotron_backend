@@ -12,12 +12,34 @@ from http import HTTPStatus
 
 
 class BaseView(APIView):
+    """
+        Base class for all CRUD endpoints.
+        ...
+
+        Attributes
+        ----------
+        provider : ServiceProvider
+            Instance of ServiceProvider inheritor. provider attribute is used to perform all db operations
+
+        serializer_type : Type[Serializer]
+            Type of serializer, which will be used to serialize responses to JSON
+        """
     provider: ServiceProvider
     serializer_type: Type[Serializer]
     permission_classes = [IsAdminOrReadonly]
 
     def get(self, request: HttpRequest) -> JsonResponse:
+        """
+        HTTP Handler for GET requests.
 
+        Parameters
+        ----------
+        request : HttpRequest
+
+        Returns
+        -------
+        JsonResponse
+        """
         # get one entity by its id
         if len(request.GET) == 1 and 'id' in request.GET:
             return self._get_by_id(request)
@@ -30,6 +52,17 @@ class BaseView(APIView):
         return self._get_paginated_response(query_result, request)
 
     def _get_by_id(self, request: HttpRequest) -> JsonResponse:
+        """
+        Processes get request. Used to get serialized data about one specific object in db.
+
+        Parameters
+        ----------
+        request : HttpRequest
+
+        Returns
+        ----------
+        JsonResponse
+        """
         id = request.GET.get(key='id')
         if not id.isdigit():
             return JsonResponse({'message': 'Id must be a number'}, status=HTTPStatus.BAD_REQUEST)
@@ -40,6 +73,18 @@ class BaseView(APIView):
         return JsonResponse(serializer.data, status=HTTPStatus.OK)
 
     def _get_with_filters(self, request: HttpRequest) -> QuerySet or None:
+        """
+            Processes get request if filters were specified.
+
+            Parameters
+            ----------
+            request : HttpRequest
+
+            Returns
+            ----------
+            QuerySet
+                Filtered data for further pagination and serialization
+        """
         filters_dict = request.GET.dict()
         if 'page' in filters_dict:
             del filters_dict['page']
@@ -51,9 +96,34 @@ class BaseView(APIView):
         return self.provider.get_list(**filters_dict)
 
     def _get_all(self) -> QuerySet:
+        """
+                    Processes get request with no filters and queries.
+
+                    Parameters
+                    ----------
+
+                    Returns
+                    ----------
+                    QuerySet
+                        List of all models for further pagination and serialization
+                """
         return self.provider.get_list()
 
     def _get_paginated_response(self, query: QuerySet, request: HttpRequest) -> JsonResponse:
+        """
+                    Applies pagination and serialization to result query set.
+
+                    Parameters
+                    ----------
+                    query : QuerySet
+                        Query set for pagination and serialization
+                    request : HttpRequest
+                        Pagination info is parsed from request url params
+
+                    Returns
+                    ----------
+                    JsonResponse
+                """
         paginator = PageNumberPagination()
         result = paginator.paginate_queryset(query, request)
         serializer = self.serializer_type(result, many=True)
@@ -63,10 +133,35 @@ class BaseView(APIView):
             'total_pages': self._get_total_pages(len(query), paginator.page_size)
         })
 
-    def _get_total_pages(self, total_len, page_size: int) -> int:
+    @staticmethod
+    def _get_total_pages(total_len: int, page_size: int) -> int:
+        """
+        Calculates the total number of pages
+        Parameters
+        ----------
+        total_len : int
+            Total number of elements
+        page_size
+            Number of elements on every page
+
+        Returns
+        -------
+            int
+        """
         return int(math.ceil(total_len / page_size))
 
     def post(self, request: HttpRequest) -> JsonResponse:
+        """
+                HTTP Handler for POST requests.
+
+                Parameters
+                ----------
+                request : HttpRequest
+
+                Returns
+                -------
+                JsonResponse
+        """
         json_string = request.body.decode()
         json_data = json.loads(json_string)
 
@@ -90,6 +185,17 @@ class BaseView(APIView):
         return JsonResponse({'id': result.id}, status=HTTPStatus.OK)
 
     def put(self, request: HttpRequest) -> JsonResponse:
+        """
+                        HTTP Handler for PUT requests.
+
+                        Parameters
+                        ----------
+                        request : HttpRequest
+
+                        Returns
+                        -------
+                        JsonResponse
+                """
         id = request.GET.get('id')
         if not id:
             return JsonResponse({'message': 'Id is required'}, status=HTTPStatus.BAD_REQUEST)
@@ -114,6 +220,17 @@ class BaseView(APIView):
         return JsonResponse({'id': id}, status=HTTPStatus.OK)
 
     def delete(self, request: HttpRequest) -> JsonResponse:
+        """
+                        HTTP Handler for DELETE requests.
+
+                        Parameters
+                        ----------
+                        request : HttpRequest
+
+                        Returns
+                        -------
+                        JsonResponse
+                """
         target_id = request.GET.get('id')
         if not target_id:
             return JsonResponse({'message': 'id is required'}, status=HTTPStatus.BAD_REQUEST)

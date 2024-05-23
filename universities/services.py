@@ -3,6 +3,9 @@ from api_base import services
 
 
 class UniversityServices(services.ServiceProvider):
+    """
+    Service provider class for Universities. This class provides methods to work with universities in db
+    """
     def __init__(self):
         super().__init__()
         self.model = University

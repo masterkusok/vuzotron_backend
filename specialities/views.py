@@ -5,12 +5,27 @@ from universities.services import UniversityServices
 
 
 class SpecialitiesView(BaseView):
+    """
+    Specialities CRUD endpoints.
+    """
+
     def __init__(self):
         self.provider = SpecialityServices()
         self.serializer_type = SpecialitySerializer
         super(SpecialitiesView, self).__init__()
 
     def post(self, request: HttpRequest) -> JsonResponse:
+        """
+        Handler for POST methods to /specialities
+        Parameters
+        ----------
+        request: HttpRequest
+        Returns
+        -------
+        JsonResponse
+        """
+
+        # This method is overridden in order to allow user add speciality refer to specific university by its id
         json_data = json.loads(request.body.decode())
 
         if 'id' not in request.GET:

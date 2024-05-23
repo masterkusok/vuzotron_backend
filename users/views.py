@@ -6,10 +6,26 @@ from http import HTTPStatus
 
 
 class UsersViews(APIView):
+    """
+    Endpoints to manage users.
+    Attributes
+    ----------
+    user_model : UserModel
+        Actual user model
+    """
     user_model = get_user_model()
     permission_classes = [IsAdminUser]
 
     def post(self, request: HttpRequest) -> JsonResponse:
+        """
+        Handles POST requests to users/manage/switch. Used to switch users role (guest admin) by its id
+        Parameters
+        ----------
+        request : HttpRequest
+        Returns
+        -------
+        JsonResponse
+        """
         id = request.GET.get('id')
         if not id:
             return JsonResponse({'message': 'Id is required'}, status=HTTPStatus.BAD_REQUEST)

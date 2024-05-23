@@ -9,6 +9,17 @@ END_EVENT = 'end'
 
 
 def parse_file(path: str) -> (bool, list[(University, list[Speciality])]):
+    """
+    This function is used to parse the xml file of Obrdnadzor registry
+    Parameters
+    ----------
+    path : str
+        path to registry.xml file
+    Returns
+    -------
+    (bool, list[(University, list[Speciality])])
+        Tuple, with bool, which indicates if registry was parsed successfully, and list on pairs of University and its specialities
+    """
     university_list = []
     if not os.path.exists(path):
         # файл не найден
