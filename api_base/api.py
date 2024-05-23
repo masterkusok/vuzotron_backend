@@ -1,14 +1,12 @@
 import json
 import math
 from typing import Type
-
+from users.models import IsAdminOrReadonly
 from django.db.models import QuerySet
 from rest_framework.views import APIView
 from rest_framework.response import Serializer
 from rest_framework.pagination import PageNumberPagination
 from django.http import HttpRequest, JsonResponse
-from rest_framework.decorators import permission_classes
-from rest_framework.permissions import IsAdminUser, AllowAny
 from api_base.services import ServiceProvider
 from http import HTTPStatus
 
@@ -16,6 +14,7 @@ from http import HTTPStatus
 class BaseView(APIView):
     provider: ServiceProvider
     serializer_type: Type[Serializer]
+    permission_classes = [IsAdminOrReadonly]
 
     def get(self, request: HttpRequest) -> JsonResponse:
 
@@ -68,7 +67,6 @@ class BaseView(APIView):
         return int(math.ceil(total_len / page_size))
 
     def post(self, request: HttpRequest) -> JsonResponse:
-        permission_classes(IsAdminUser)
         json_string = request.body.decode()
         json_data = json.loads(json_string)
 
@@ -92,7 +90,6 @@ class BaseView(APIView):
         return JsonResponse({'id': result.id}, status=HTTPStatus.OK)
 
     def put(self, request: HttpRequest) -> JsonResponse:
-        permission_classes(IsAdminUser)
         id = request.GET.get('id')
         if not id:
             return JsonResponse({'message': 'Id is required'}, status=HTTPStatus.BAD_REQUEST)
@@ -117,7 +114,6 @@ class BaseView(APIView):
         return JsonResponse({'id': id}, status=HTTPStatus.OK)
 
     def delete(self, request: HttpRequest) -> JsonResponse:
-        permission_classes(IsAdminUser)
         target_id = request.GET.get('id')
         if not target_id:
             return JsonResponse({'message': 'id is required'}, status=HTTPStatus.BAD_REQUEST)

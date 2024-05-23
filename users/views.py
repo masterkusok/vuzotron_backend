@@ -2,16 +2,15 @@ from django.http import HttpRequest, JsonResponse
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import *
 from rest_framework.views import APIView
-from rest_framework.decorators import permission_classes, api_view
 from http import HTTPStatus
 
 
 class UsersViews(APIView):
     user_model = get_user_model()
+    permission_classes = [IsAdminUser]
 
     def post(self, request: HttpRequest) -> JsonResponse:
-        permission_classes(IsAdminUser)
-        id = request.GET.get('id',)
+        id = request.GET.get('id')
         if not id:
             return JsonResponse({'message': 'Id is required'}, status=HTTPStatus.BAD_REQUEST)
         role = request.GET.get('role')
