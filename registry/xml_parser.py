@@ -43,6 +43,9 @@ def parse_file(path: str) -> (bool, list[(University, list[Speciality])]):
                     sys_guid.text) == 0:
                 continue
 
+            if len(full_name.text) < 5 or len(full_name) > 250:
+                continue
+
             university = University(region=region.text, full_name=full_name.text, short_name=short_name.text,
                                     sys_guid=sys_guid.text, city='no_data')
             specs = []
