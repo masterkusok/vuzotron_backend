@@ -21,7 +21,7 @@ def pull_registry_data(url: str) -> bool:
         Returns True, if data in DB was updated.
     """
 
-    # # парсим файл
+    # парсим файл
     response = requests.get(url, stream=True)
     cacher = backend.settings.REDIS_CACHER
     if response.status_code != HTTPStatus.OK:
