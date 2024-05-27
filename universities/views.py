@@ -1,6 +1,11 @@
+import json
+from http import HTTPStatus
+
+from django.http import HttpRequest, JsonResponse
+
+from api_base.api import BaseView
+from . import services
 from .serializers import SingleUniversitySerializer, UniversityListSerializer
-from .services import *
-from api_base.api import *
 
 
 class UniversityView(BaseView):
@@ -9,7 +14,7 @@ class UniversityView(BaseView):
     """
 
     def __init__(self):
-        self.provider = UniversityServices()
+        self.provider = services.UniversityServices()
         self.serializer_type = UniversityListSerializer
         super(UniversityView, self).__init__()
 
@@ -23,8 +28,9 @@ class UniversityView(BaseView):
         -------
         JsonResponse
         """
-        # This method is overridden in order to specify correct university serializer for single and list GET requests
-        if 'id' in request.GET:
+        # This method is overridden in order to specify correct
+        # university serializer for single and list GET requests
+        if "id" in request.GET:
             self.serializer_type = SingleUniversitySerializer
         response = super(UniversityView, self).get(request)
         self.serializer_type = UniversityListSerializer
@@ -40,7 +46,8 @@ class UniversityView(BaseView):
         -------
         JsonResponse
         """
-        # This method is overridden in order to make specific checks for universities of provided json data.
+        # This method is overridden in order to make specific
+        # checks for universities of provided json data.
 
         response = super().post(request)
 
@@ -53,7 +60,9 @@ class UniversityView(BaseView):
             if expected_type == str and isinstance(value, str) and value.isdigit():
                 return JsonResponse(
                     {
-                        "message": f"Field {required_field} should be of type {expected_type.__name__}, but got a numeric string: {value}"
+                        "message": f"Field {required_field} should be of type"
+                                   f" {expected_type.__name__},"
+                                   f" but got a numeric string: {value}"
                     },
                     status=HTTPStatus.BAD_REQUEST,
                 )

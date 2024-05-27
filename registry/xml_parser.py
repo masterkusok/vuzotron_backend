@@ -1,6 +1,2 @@
-
-
-START_EVENT = 'start'
-END_EVENT = 'end'
-
-
+START_EVENT = "start"
+END_EVENT = "end"

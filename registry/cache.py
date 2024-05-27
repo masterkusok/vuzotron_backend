@@ -5,6 +5,7 @@ class RedisCacher:
     """
     RedisCacher - is a class, which realises logic for storing binary data in redis
     """
+
     _client: redis.client.Redis
 
     def __init__(self, host: str, port: int) -> None:

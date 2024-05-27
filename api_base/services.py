@@ -1,6 +1,7 @@
 from abc import ABC
 from typing import Type
-from django.contrib.postgres.search import *
+
+from django.contrib.postgres.search import SearchVector
 from django.db import models
 from django.db.models import QuerySet
 
@@ -13,7 +14,8 @@ class ServiceProvider(ABC):
     model
         The model class
     fields
-        Dictionary with model fields names and types. If user should be able to work with this field from models
+        Dictionary with model fields names and types. If user
+         should be able to work with this field from models
         services,fields dictionary should contain this field
     """
 
@@ -57,11 +59,11 @@ class ServiceProvider(ABC):
 
         vector = SearchVector(*self.fields.keys())
         db_filters = filters
-        if 'query' in filters:
-            db_filters['search__icontains'] = db_filters['query']
-            del db_filters['query']
-        if 'page' in filters:
-            del db_filters['page']
+        if "query" in filters:
+            db_filters["search__icontains"] = db_filters["query"]
+            del db_filters["query"]
+        if "page" in filters:
+            del db_filters["page"]
         return self.model.objects.annotate(search=vector).filter(**db_filters).all()
 
     def add_one(self, **kwargs) -> models.Model:

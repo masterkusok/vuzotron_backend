@@ -10,7 +10,12 @@ class IsAdminOrReadonly(permissions.BasePermission):
     SAFE_METHODS: list
         List of safe methods to be allowed to every person
     """
-    SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
+
+    SAFE_METHODS = ["GET", "HEAD", "OPTIONS"]
 
     def has_permission(self, request, view):
-        return request.user.is_staff or request.user.is_superuser or request.method in self.SAFE_METHODS
+        return (
+            request.user.is_staff
+            or request.user.is_superuser
+            or request.method in self.SAFE_METHODS
+        )
