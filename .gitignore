@@ -185,3 +185,4 @@ fabric.properties
 .idea
 temp/
 registry.zip
+db.sqlite3
