@@ -127,11 +127,13 @@ class BaseView(APIView):
         paginator = PageNumberPagination()
         result = paginator.paginate_queryset(query, request)
         serializer = self.serializer_type(result, many=True)
-        return JsonResponse(data={
-            'results': serializer.data,
+        response = JsonResponse(data={
+            'result': serializer.data,
             'page_size': paginator.page_size,
             'total_pages': self._get_total_pages(len(query), paginator.page_size)
         })
+        print(response.getvalue())
+        return response
 
     @staticmethod
     def _get_total_pages(total_len: int, page_size: int) -> int:

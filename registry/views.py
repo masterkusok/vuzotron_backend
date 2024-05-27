@@ -1,14 +1,14 @@
 import http
 from rest_framework.views import APIView
 from .services import *
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, AllowAny
 from django.http import JsonResponse, HttpRequest
 
 
 class RegistryView(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [AllowAny]
 
-    def put(self, request: HttpRequest) -> JsonResponse:
+    def get(self, request: HttpRequest) -> JsonResponse:
         url = request.GET.get(key='url')
         if not url:
             return JsonResponse({'status': 'error', 'message': 'Url parameter is required'},
