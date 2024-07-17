@@ -21,7 +21,7 @@
  - Uvicorn для запуска сервера
 
 ## Архитектура
-![not found](https://github.com/masterkusok/vuzotron_backend/blob/main/architecture.jpg?raw=true)
+![not found](https://github.com/masterkusok/vuzotron_backend/blob/main/architecture?raw=true)
 
 ## Запуск проекта 
 Для запуска проекта рекомендуется использовать Docker
